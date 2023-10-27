@@ -9,12 +9,12 @@ const listaCursos = document.querySelector("#lista-cursos")
 // VARIABLES
     let articulosCarrito = []
 
-
 // FUNCIONES
 
 const vaciarElementosCarrito = () => {
     limpiarHTML()
-    localStorage.removeItem("articulos")
+    articulosCarrito = []
+    localStorage.setItem("articulos", JSON.stringify(articulosCarrito))
 }
 
 const eliminarCurso = (e) => {
