@@ -14,14 +14,14 @@ const listaCursos = document.querySelector("#lista-cursos")
 
 const vaciarElementosCarrito = () => {
     limpiarHTML()
-    articulosCarrito = []
+    localStorage.removeItem("articulos")
 }
 
 const eliminarCurso = (e) => {
     if(e.target.classList.contains("borrar-curso")){
         const cursoID = e.target.getAttribute("data-id")
         articulosCarrito = articulosCarrito.filter(curso => curso.id !== cursoID) // Copia todos los elementos diferentes al id que ha clickado, es decir, está borrado.
-        carritoHTML() // Imprime de nuevo el carrito sin ese curso
+        almacenaCarrito(articulosCarrito) // Almacena de nuevo el carrito sin ese curso
     }
 }
 
@@ -43,8 +43,19 @@ const leerDatosCurso = (curso) => {
         cantidad: 1
     }
 
-    // Revisamos si ya existe el curso en el carrito
 
+    if(localStorage.getItem("articulos")){
+        actualizaCarrito(infoCurso)
+    } else {
+        almacenaCarrito(articulosCarrito)
+    }
+}
+
+
+const actualizaCarrito = (infoCurso) => {
+    articulosCarrito = JSON.parse(localStorage.getItem("articulos"))
+
+    // Revisamos si ya existe el curso en el carrito
     const existe = articulosCarrito.some(curso => curso.id  === infoCurso.id) // Comprueba si el id del curso que recorre en el carrito (curso) coincide con el id del curso que vamos a meter (infoCurso)
     if (existe){
         const cursos = articulosCarrito.map(curso => {
@@ -56,8 +67,8 @@ const leerDatosCurso = (curso) => {
     } else {
         articulosCarrito = [...articulosCarrito, infoCurso] //Copia lo que tenemos en el carrito y le añade el nuevo curso
     }
-    
-    carritoHTML() // articulosCarrito es una variable global, no es necesario pasarla como argumento.
+
+    almacenaCarrito(articulosCarrito)
 }
 
 const carritoHTML = () => {
@@ -87,12 +98,23 @@ const limpiarHTML = () => {
     }
 }
 
+const almacenaCarrito = (articulosCarrito) => {
+    localStorage.setItem("articulos", JSON.stringify(articulosCarrito))
+    const articulosStr = localStorage.getItem("articulos")
+    console.log(articulosStr)
+    carritoHTML()
+}
+
 
 // LISTENERS
 const cargarEventsListeners = () => {
     listaCursos.addEventListener("click", addCurso)
     carrito.addEventListener("click", eliminarCurso)
     vaciarCarrito.addEventListener("click", vaciarElementosCarrito)
+    window.addEventListener("DOMContentLoaded", () => {
+        articulosCarrito = JSON.parse(localStorage.getItem("articulos"))
+        carritoHTML()
+      })
 }
 
 cargarEventsListeners()
